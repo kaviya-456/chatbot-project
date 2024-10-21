@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chatbox {
+            background-color: #fff;
+            width: 400px;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        .messages p {
+            padding: 8px;
+            border-radius: 5px;
+            background-color: #e1f3fb;
+            margin-bottom: 10px;
+        }
+        .input-box {
+            display: flex;
+            padding: 10px;
+        }
+        .input-box input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+        }
+        .input-box button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbox">
+        <div class="messages" id="messages"></div>
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Type your message..." autofocus>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            document.getElementById("messages").innerHTML += `<p><b>You:</b> ${userInput}</p>`;
+            
+            // Send user input to the Flask server and get a response
+            fetch("/get", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `msg=${userInput}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("messages").innerHTML += `<p><b>Bot:</b> ${data.response}</p>`;
+                document.getElementById("userInput").value = ""; // Clear the input field
+                document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight; // Scroll to the latest message
+            });
+        }
+    </script>
+</body>
+</html>
